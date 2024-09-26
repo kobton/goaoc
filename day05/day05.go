@@ -21,7 +21,7 @@ var humidityToLocationSlice [][]string
 func main() {
 	createMaps()
 	part1()
-	// part2()
+	part2()
 
 }
 
@@ -52,28 +52,49 @@ func part2(){
 		return
 	}
 
-	var allSeeds []int
+	minPos := math.MaxInt
 	for i := 0 ; i < len(numSeeds)-1; {
-		for j := 0 ; j < numSeeds[i+1] ; j++ {
-			allSeeds = append(allSeeds, numSeeds[i]+j)
+		tempPos := finMinInRange(numSeeds[i], numSeeds[i+1])
+		if(tempPos<minPos){
+			minPos = tempPos
 		}
 		i = i+2
  	}
 
 
-	var locations []int
-	for _, num := range allSeeds{
-		locationNum := passNumber(num)
-		locations = append(locations, locationNum)
-	}
-
-	minLocation , err := MinIntSlice(locations)
-	if err != nil{
-		return
-	}
-
-	fmt.Printf("The min location part2 is: %d\n", minLocation)
+	fmt.Printf("The min location part2 is: %d\n", minPos)
 }
+
+func finMinInRange(start int, lenght int)(int){
+	if (lenght == 1){ found, err := MinIntSlice([]int{passNumber(start),passNumber(start+1)})
+		if err != nil{
+			return -1
+		}
+		return found
+	}
+	stepSize := lenght/2
+	middle := start + stepSize
+
+	startLoc := passNumber(start)
+
+	middleLoc := passNumber(middle)
+	endLoc := passNumber((start+lenght))
+
+	foundMin := math.MaxInt
+
+	if (startLoc + stepSize != middleLoc){
+		foundMin = finMinInRange(start, stepSize)
+	}
+	if (middleLoc + (lenght - stepSize) != endLoc) {
+		rightFoundMin := finMinInRange(middle, (lenght-stepSize))
+
+		if(rightFoundMin<foundMin){
+			foundMin = rightFoundMin
+		}
+	}
+	return foundMin
+}
+
 
 func MinIntSlice(numbers []int) (int, error) {
     if len(numbers) == 0 {
